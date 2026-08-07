@@ -1,0 +1,9 @@
+/* Custom CSS overrides & global styles */
+@layer base {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Add any custom animations or layout tweaks here */
