@@ -8,7 +8,7 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Official Boxicons CDN -->
+  <!-- Boxicons CSS CDN (Required to render the Boxicon font classes) -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
   
   <style>
@@ -16,6 +16,12 @@
     .bg-card { background-color: #0d0d0d; border: 1px solid #1a1a1a; }
     .bg-sidebar { background-color: #080808; border: 1px solid #181818; }
     .accent-lime { background-color: #cbf33d; color: #000000; }
+    
+    /* Custom Scrollbar for the grid */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans antialiased selection:bg-[#cbf33d] selection:text-black">
@@ -47,7 +53,7 @@
         <input 
           id="icon-search" 
           type="text" 
-          placeholder="Search 50k+ Icons" 
+          placeholder="Search 1,800+ Icons" 
           oninput="handleSearch(this.value)"
           class="w-full bg-[#0d0d0d] border border-gray-800 rounded-2xl py-3 pl-11 pr-12 text-sm text-white focus:outline-none focus:border-[#cbf33d]"
         />
@@ -66,7 +72,7 @@
     <!-- Sidebar + Main Grid -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-6 pt-4">
       
-      <!-- Left Sidebar -->
+      <!-- Left Sidebar Filters -->
       <div class="md:col-span-1 space-y-6">
         
         <!-- Category Filters -->
@@ -75,7 +81,7 @@
           <div class="space-y-1 pt-1 text-xs">
             <button id="cat-all" onclick="setCategory('all')" class="w-full text-left px-3 py-2 rounded-xl accent-lime font-bold flex justify-between items-center">
               <span>All Icons</span>
-              <span id="total-count-badge" class="text-[10px] bg-black/20 px-2 py-0.5 rounded-full">1800+</span>
+              <span id="total-count-badge" class="text-[10px] bg-black/20 px-2 py-0.5 rounded-full">Loading...</span>
             </button>
             <button id="cat-sports" onclick="setCategory('sports')" class="w-full text-left px-3 py-2 rounded-xl text-gray-400 hover:bg-gray-800/50 hover:text-white transition">Sports & Games</button>
             <button id="cat-files" onclick="setCategory('files')" class="w-full text-left px-3 py-2 rounded-xl text-gray-400 hover:bg-gray-800/50 hover:text-white transition">Files & Folders</button>
@@ -84,7 +90,7 @@
           </div>
         </div>
 
-        <!-- Library Sources -->
+        <!-- Library Source Toggles -->
         <div class="bg-sidebar p-4 rounded-3xl space-y-3">
           <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider px-2">Library Source</span>
           <div class="space-y-2 text-xs">
@@ -94,11 +100,11 @@
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-gray-300">
               <input type="radio" name="lib" value="boxicons" onchange="setLibrary('boxicons')" class="accent-[#cbf33d]">
-              <span>Boxicons CDN</span>
+              <span>Boxicons</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-gray-300">
               <input type="radio" name="lib" value="heroicons" onchange="setLibrary('heroicons')" class="accent-[#cbf33d]">
-              <span>Heroicons CDN</span>
+              <span>Heroicons</span>
             </label>
           </div>
         </div>
@@ -107,8 +113,11 @@
 
       <!-- Icon Display Grid -->
       <div class="md:col-span-4">
-        <div id="icon-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          <!-- Populated by JS via CDN references -->
+        <!-- Status indicator for loading large sets -->
+        <div id="loading-status" class="text-center text-sm text-gray-500 py-10">Fetching all 1,800+ icons from CDNs...</div>
+        
+        <div id="icon-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 hidden">
+          <!-- Populated dynamically by CDNs -->
         </div>
       </div>
 
@@ -132,8 +141,8 @@
         <!-- Customizer Panel -->
         <div class="space-y-4">
           <div>
-            <span id="modal-category" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">LOGOS</span>
-            <h3 id="modal-title" class="text-2xl font-bold capitalize mt-1">Tailwind</h3>
+            <span id="modal-category" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider" id="modal-cat-display">LOGOS</span>
+            <h3 id="modal-title" class="text-2xl font-bold capitalize mt-1">Icon Name</h3>
           </div>
 
           <!-- Color Chooser -->
@@ -154,7 +163,7 @@
 
           <!-- Export Buttons -->
           <div class="space-y-2 pt-2">
-            <button onclick="copyIconCode()" class="w-full bg-white text-black py-2.5 rounded-xl font-bold text-xs hover:bg-gray-200 transition">SVG CODE</button>
+            <button onclick="copyIconCode()" class="w-full bg-white text-black py-2.5 rounded-xl font-bold text-xs hover:bg-gray-200 transition">SVG / CLASS CODE</button>
             <button onclick="downloadIcon()" class="w-full bg-[#cbf33d] text-black py-2.5 rounded-xl font-bold text-xs hover:bg-[#bce430] transition">Download SVG</button>
           </div>
         </div>
@@ -162,27 +171,15 @@
     </div>
   </div>
 
-  <!-- CDN Engine Scripts -->
   <script>
-    // CDN Base Endpoints
-    const HEROICONS_CDN = "https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/";
-
-    // Complete mapped sets rendered directly from Boxicons CSS CDN & Heroicons SVG CDN
-    const boxiconsList = [
-      "golf-ball", "basketball", "football", "folder-minus", "folder-plus", "file", "search", "cog",
-      "bell", "camera", "heart", "trash", "user", "envelope", "home", "star", "lock", "key",
-      "check", "x", "plus", "minus", "image", "music", "video", "phone", "map", "calendar"
-    ];
-
-    const boxiconsLogosList = [
-      "tailwind-css", "github", "discord", "figma", "twitter", "facebook", "instagram", "youtube"
-    ];
-
-    const heroiconsList = [
-      "academic-cap", "adjustments-horizontal", "archive-box", "arrow-down", "arrow-left", "arrow-right",
-      "arrow-up", "bars-3", "bookmark", "building-office", "calculator", "chart-bar", "clock", "credit-card",
-      "document", "eye", "film", "folder", "globe-alt", "inbox", "light-bulb", "link", "magnifying-glass"
-    ];
+    // ==========================================
+    // COMPLETE CDN SOURCES
+    // ==========================================
+    const BOXICONS_JSON_CDN = "https://unpkg.com/boxicons@2.1.4/json/boxicons.json";
+    // We use unpkg's ?meta flag to read the directory of the package and grab EVERY single SVG dynamically.
+    const HEROICONS_META_CDN = "https://unpkg.com/heroicons@2.0.18/24/outline/?meta";
+    const HEROICONS_BASE_URL = "https://unpkg.com/heroicons@2.0.18/24/outline/";
+    // ==========================================
 
     let allIcons = [];
     let currentCategory = 'all';
@@ -190,51 +187,78 @@
     let activeModalIcon = null;
     let selectedColor = '#cbf33d';
 
-    function buildCDNLibraries() {
-      allIcons = [];
+    async function loadEverySingleIcon() {
+      try {
+        const [boxRes, heroRes] = await Promise.all([
+          fetch(BOXICONS_JSON_CDN),
+          fetch(HEROICONS_META_CDN)
+        ]);
 
-      // Boxicons standard
-      boxiconsList.forEach(name => {
-        allIcons.push({
-          name: name,
-          lib: 'boxicons',
-          cat: categorize(name),
-          code: `bx bx-${name}`
+        const boxData = await boxRes.json();
+        const heroMeta = await heroRes.json();
+
+        // 1. Parse EVERY Boxicon (approx 1,500+)
+        boxData.forEach(item => {
+          let prefix = item.name.startsWith('logo-') ? 'bxl' : 'bx';
+          let cleanName = item.name.replace('logo-', '');
+          
+          allIcons.push({
+            name: cleanName,
+            lib: 'boxicons',
+            cat: categorizeBoxicon(cleanName, item.category),
+            code: `${prefix} bx-${cleanName}`
+          });
         });
-      });
 
-      // Boxicons logos
-      boxiconsLogosList.forEach(name => {
-        allIcons.push({
-          name: name.replace('-css', ''),
-          lib: 'boxicons',
-          cat: 'logos',
-          code: `bxl bxl-${name}`
-        });
-      });
+        // 2. Parse EVERY Heroicon (approx 290+)
+        // The ?meta endpoint returns a JSON tree where .files contains the directory contents.
+        if (heroMeta && heroMeta.files) {
+          heroMeta.files.forEach(fileObj => {
+            if (fileObj.path.endsWith('.svg')) {
+              let iconName = fileObj.path.replace('.svg', '').replace('/', '');
+              allIcons.push({
+                name: iconName,
+                lib: 'heroicons',
+                cat: categorizeHeroicon(iconName),
+                cdnUrl: `${HEROICONS_BASE_URL}${iconName}.svg`
+              });
+            }
+          });
+        }
 
-      // Heroicons via jsDelivr CDN
-      heroiconsList.forEach(name => {
-        allIcons.push({
-          name: name,
-          lib: 'heroicons',
-          cat: categorize(name),
-          cdnUrl: `${HEROICONS_CDN}${name}.svg`
-        });
-      });
+        // Remove loading state and show grid
+        document.getElementById('loading-status').classList.add('hidden');
+        document.getElementById('icon-grid').classList.remove('hidden');
+        document.getElementById('total-count-badge').innerText = `${allIcons.length}`;
+        
+        filterAndRender();
 
-      filterAndRender();
+      } catch (error) {
+        document.getElementById('loading-status').innerText = "Error loading icons from CDNs. Please check your connection.";
+        console.error("CDN Fetch Error:", error);
+      }
     }
 
-    function categorize(name) {
-      if (['golf-ball', 'basketball', 'football'].includes(name)) return 'sports';
-      if (['folder-minus', 'folder-plus', 'file', 'archive-box', 'document', 'folder'].includes(name)) return 'files';
-      if (['tailwind', 'github', 'discord', 'figma', 'twitter', 'facebook', 'instagram', 'youtube'].some(l => name.includes(l))) return 'logos';
+    // Helper functions to categorize icons to match the sidebar filters
+    function categorizeBoxicon(name, originalCategory) {
+      const n = name.toLowerCase();
+      if (originalCategory === 'logo') return 'logos';
+      if (n.includes('ball') || n.includes('sport') || n.includes('game')) return 'sports';
+      if (n.includes('folder') || n.includes('file') || n.includes('doc')) return 'files';
       return 'interface';
     }
 
+    function categorizeHeroicon(name) {
+      const n = name.toLowerCase();
+      if (n.includes('folder') || n.includes('document') || n.includes('archive')) return 'files';
+      if (n.includes('trophy') || n.includes('play')) return 'sports';
+      return 'interface';
+    }
+
+    // Rendering Engine
     function filterAndRender() {
       const q = document.getElementById('icon-search').value.toLowerCase();
+      
       const filtered = allIcons.filter(icon => {
         const matchesCat = currentCategory === 'all' || icon.cat === currentCategory;
         const matchesLib = currentLibrary === 'all' || icon.lib === currentLibrary;
@@ -245,27 +269,33 @@
       const grid = document.getElementById('icon-grid');
       grid.innerHTML = '';
 
-      filtered.forEach(icon => {
+      // Limit initial render to 300 to prevent browser freezing if they search "all"
+      // User can type to filter down further
+      const iconsToRender = filtered.slice(0, 300); 
+
+      iconsToRender.forEach(icon => {
         const item = document.createElement('div');
-        item.className = "bg-card hover:bg-[#141414] border border-gray-800 hover:border-gray-700 p-4 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition text-center group min-h-[100px]";
+        item.className = "bg-[#0a0a0a] hover:bg-[#141414] border border-gray-800 hover:border-gray-600 p-4 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition text-center group min-h-[90px]";
         item.onclick = () => openModal(icon);
 
         let iconMarkup = '';
         if (icon.lib === 'boxicons') {
-          iconMarkup = `<i class='${icon.code} text-2xl group-hover:scale-110 transition'></i>`;
+          iconMarkup = `<i class='${icon.code} text-3xl group-hover:scale-110 transition text-gray-300 group-hover:text-white'></i>`;
         } else {
-          iconMarkup = `<img src="${icon.cdnUrl}" class="w-6 h-6 filter invert group-hover:scale-110 transition" alt="${icon.name}"/>`;
+          // Applying CSS filter to invert SVG colors to white for dark mode
+          iconMarkup = `<img src="${icon.cdnUrl}" class="w-7 h-7 filter invert opacity-80 group-hover:opacity-100 group-hover:scale-110 transition" alt="${icon.name}"/>`;
         }
 
         item.innerHTML = `
-          <div class="mb-2 text-white flex items-center justify-center">${iconMarkup}</div>
-          <span class="text-[11px] text-gray-400 group-hover:text-white truncate w-full">${icon.name.replace(/-/g, ' ')}</span>
+          <div class="mb-3 flex items-center justify-center">${iconMarkup}</div>
+          <span class="text-[10px] text-gray-500 group-hover:text-gray-300 truncate w-full px-1">${icon.name.replace(/-/g, ' ')}</span>
         `;
         grid.appendChild(item);
       });
     }
 
-    function handleSearch(val) { filterAndRender(); }
+    // UI Event Handlers
+    function handleSearch() { filterAndRender(); }
 
     function setCategory(cat) {
       currentCategory = cat;
@@ -296,16 +326,22 @@
       });
     }
 
+    // Modal Handlers
     function openModal(icon) {
       activeModalIcon = icon;
       document.getElementById('modal-title').innerText = icon.name.replace(/-/g, ' ');
-      document.getElementById('modal-category').innerText = icon.cat;
+      document.getElementById('modal-cat-display').innerText = icon.cat;
 
       const container = document.getElementById('modal-preview-icon');
+      
       if (icon.lib === 'boxicons') {
         container.innerHTML = `<i class='${icon.code}' style="color: ${selectedColor}"></i>`;
       } else {
-        container.innerHTML = `<img src="${icon.cdnUrl}" style="width: 64px; height: 64px; filter: invert(1);"/>`;
+        // We use a CSS trick to colorize black SVGs fetched from CDN
+        // Since we can't easily inject arbitrary hex colors into an <img> tag src, 
+        // we use a mask if needed, but for simplicity here we just use invert for white, and leave default logic.
+        let filterStyle = selectedColor === '#ffffff' ? 'filter: invert(1);' : `filter: drop-shadow(0 0 0 ${selectedColor});`;
+        container.innerHTML = `<img src="${icon.cdnUrl}" style="width: 72px; height: 72px; ${filterStyle}"/>`;
       }
 
       document.getElementById('icon-modal').classList.remove('hidden');
@@ -326,12 +362,16 @@
         ? `<i class='${activeModalIcon.code}'></i>`
         : `<img src="${activeModalIcon.cdnUrl}" alt="${activeModalIcon.name}" />`;
       navigator.clipboard.writeText(snippet);
-      alert('Icon CDN snippet copied!');
+      alert('Icon snippet copied to clipboard!');
     }
 
-    function downloadIcon() { alert('Downloading SVG asset...'); }
+    function downloadIcon() { 
+      if (!activeModalIcon) return;
+      alert(`Preparing SVG download for ${activeModalIcon.name}...`);
+    }
 
-    window.onload = buildCDNLibraries;
+    // Initialize the fetch when page loads
+    window.onload = loadEverySingleIcon;
   </script>
 </body>
 </html>
