@@ -6,4 +6,19 @@
   }
 }
 
-/* Add any custom animations or layout tweaks here */
+/* Creates the Boxicons-style dotted background grid for the preview area */
+.bg-dots {
+  background-color: #121212;
+  background-image: radial-gradient(circle, #333 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: center;
+}
+
+/* Hide scrollbar for the code view tabs on smaller screens */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
