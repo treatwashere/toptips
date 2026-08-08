@@ -4,18 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Toptips — Icon Explorer</title>
+  
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Official Boxicons CDN -->
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+  
   <style>
     body { background-color: #000000; color: #ffffff; }
     .bg-card { background-color: #0d0d0d; border: 1px solid #1a1a1a; }
-    .bg-[#cbf33d] { background-color: #cbf33d; }
-    .text-[#cbf33d] { color: #cbf33d; }
+    .bg-sidebar { background-color: #080808; border: 1px solid #181818; }
+    .accent-lime { background-color: #cbf33d; color: #000000; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans antialiased selection:bg-[#cbf33d] selection:text-black">
 
-  <!-- Floating Navigation Header -->
+  <!-- Floating Header Navigation -->
   <div class="fixed top-4 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
     <header class="pointer-events-auto bg-[#111111]/90 border border-gray-800 rounded-full px-6 py-2.5 flex items-center justify-between w-full max-w-6xl backdrop-blur-md shadow-2xl">
       <div class="flex items-center gap-3">
@@ -25,276 +30,308 @@
         </a>
       </div>
 
-      <div class="flex items-center gap-4 text-sm font-medium">
+      <div class="flex items-center gap-6 text-sm font-medium">
         <a href="index.html" class="text-gray-400 hover:text-white transition">Home</a>
         <a href="icons.html" class="text-[#cbf33d] font-semibold">Icons</a>
-        <a href="index.html#pricing" class="text-gray-300 hover:text-white transition">Pricing</a>
+        <a href="index.html#pricing" class="text-gray-400 hover:text-white transition">Pricing</a>
       </div>
     </header>
   </div>
 
-  <!-- Search & Style Toolbar Container -->
-  <section class="pt-28 pb-4 px-4 max-w-7xl mx-auto w-full space-y-4">
-    <div class="max-w-xl mx-auto relative">
-      <input 
-        id="icon-search" 
-        type="text" 
-        placeholder="Search 50k+ Icons" 
-        oninput="handleSearch(this.value)"
-        class="w-full bg-[#111111] border border-gray-800 rounded-2xl py-3 pl-10 pr-12 text-sm text-white focus:outline-none focus:border-[#cbf33d]"
-      />
-      <svg class="w-4 h-4 absolute left-3.5 top-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-      <kbd class="absolute right-3.5 top-3 px-2 py-0.5 text-[10px] text-gray-400 bg-gray-800 rounded-lg">⌘K</kbd>
-    </div>
-
-    <!-- Style Selector Toolbar -->
-    <div class="flex justify-center items-center gap-6 text-xs text-gray-400 font-medium">
-      <button onclick="setStyle('regular')" id="style-regular" class="hover:text-white transition">Regular</button>
-      <button onclick="setStyle('rounded')" id="style-rounded" class="bg-white text-black px-3 py-1 rounded-full font-bold transition">Rounded</button>
-      <button onclick="setStyle('sharp')" id="style-sharp" class="hover:text-white transition">Sharp</button>
-    </div>
-  </section>
-
-  <!-- Sidebar & Grid Layout -->
-  <div class="max-w-7xl w-full mx-auto px-4 py-4 flex-1 flex flex-col md:flex-row gap-6">
+  <!-- Main Explorer Section -->
+  <main class="pt-24 pb-16 px-6 max-w-7xl mx-auto w-full flex-1 space-y-6">
     
-    <!-- Sidebar Categories -->
-    <aside class="w-full md:w-56 flex-shrink-0 space-y-4">
-      <div class="bg-card p-4 rounded-3xl space-y-2">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 px-2">Categories</h3>
-        <nav class="space-y-1 text-xs font-medium">
-          <button onclick="filterCategory('all')" class="cat-btn w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#cbf33d] text-black font-semibold">
-            <span>All Icons</span>
-            <span class="text-[10px] opacity-70">1800+</span>
-          </button>
-          <button onclick="filterCategory('sports')" class="cat-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
-            <span>Sports & Games</span>
-          </button>
-          <button onclick="filterCategory('files')" class="cat-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
-            <span>Files & Folders</span>
-          </button>
-          <button onclick="filterCategory('interface')" class="cat-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
-            <span>Interface</span>
-          </button>
-          <button onclick="filterCategory('logos')" class="cat-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
-            <span>Logos & Brands</span>
-          </button>
-        </nav>
+    <!-- Top Search & Style Controls -->
+    <div class="flex flex-col items-center gap-4 max-w-2xl mx-auto">
+      <div class="relative w-full">
+        <input 
+          id="icon-search" 
+          type="text" 
+          placeholder="Search 50k+ Icons" 
+          oninput="handleSearch(this.value)"
+          class="w-full bg-[#0d0d0d] border border-gray-800 rounded-2xl py-3 pl-11 pr-12 text-sm text-white focus:outline-none focus:border-[#cbf33d]"
+        />
+        <svg class="w-4 h-4 absolute left-4 top-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <kbd class="absolute right-4 top-3 px-2 py-0.5 text-xs text-gray-500 bg-gray-800 rounded-lg">⌘K</kbd>
       </div>
 
-      <!-- Icon Library Source Selector -->
-      <div class="bg-card p-4 rounded-3xl space-y-2">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2 px-2">Library Source</h3>
-        <div class="space-y-1 text-xs">
-          <label class="flex items-center gap-2 px-2 py-1 cursor-pointer text-gray-300">
-            <input type="radio" name="lib" value="all" checked onclick="setLibrary('all')" class="accent-[#cbf33d]"> All Libraries
-          </label>
-          <label class="flex items-center gap-2 px-2 py-1 cursor-pointer text-gray-300">
-            <input type="radio" name="lib" value="boxicons" onclick="setLibrary('boxicons')" class="accent-[#cbf33d]"> Boxicons
-          </label>
-          <label class="flex items-center gap-2 px-2 py-1 cursor-pointer text-gray-300">
-            <input type="radio" name="lib" value="heroicons" onclick="setLibrary('heroicons')" class="accent-[#cbf33d]"> Heroicons
-          </label>
-        </div>
+      <!-- Icon Style Switchers -->
+      <div class="flex bg-[#111111] p-1 rounded-full border border-gray-800 text-xs font-medium">
+        <button id="style-regular" onclick="setStyle('regular')" class="px-5 py-1.5 rounded-full bg-white text-black font-bold transition">Regular</button>
+        <button id="style-rounded" onclick="setStyle('rounded')" class="px-5 py-1.5 rounded-full text-gray-400 hover:text-white transition">Rounded</button>
+        <button id="style-sharp" onclick="setStyle('sharp')" class="px-5 py-1.5 rounded-full text-gray-400 hover:text-white transition">Sharp</button>
       </div>
-    </aside>
+    </div>
 
-    <!-- Main Grid Container -->
-    <main class="flex-1">
-      <div id="icon-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-        <!-- Icons rendered dynamically -->
-      </div>
-    </main>
-
-  </div>
-
-  <!-- RESTORED FULL BOXICONS DRAWER / MODAL -->
-  <div id="icon-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#121212] border border-gray-800 rounded-3xl max-w-3xl w-full p-6 relative flex flex-col md:flex-row gap-6 text-left shadow-2xl">
+    <!-- Sidebar + Main Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 pt-4">
       
-      <!-- Close Button -->
-      <button onclick="closeModal()" class="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-full p-2 text-xs z-10">✕</button>
-
-      <!-- Left Side: Custom Dot Grid Preview -->
-      <div class="w-full md:w-1/2 bg-[#0a0a0a] border border-gray-800/80 rounded-2xl flex flex-col items-center justify-center min-h-[260px] relative p-6">
-        <div id="drawer-preview-target" class="flex items-center justify-center">
-          <!-- Live Icon Injected Here -->
+      <!-- Left Sidebar -->
+      <div class="md:col-span-1 space-y-6">
+        
+        <!-- Category Filters -->
+        <div class="bg-sidebar p-4 rounded-3xl space-y-2">
+          <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider px-2">Categories</span>
+          <div class="space-y-1 pt-1 text-xs">
+            <button id="cat-all" onclick="setCategory('all')" class="w-full text-left px-3 py-2 rounded-xl accent-lime font-bold flex justify-between items-center">
+              <span>All Icons</span>
+              <span id="total-count-badge" class="text-[10px] bg-black/20 px-2 py-0.5 rounded-full">1800+</span>
+            </button>
+            <button id="cat-sports" onclick="setCategory('sports')" class="w-full text-left px-3 py-2 rounded-xl text-gray-400 hover:bg-gray-800/50 hover:text-white transition">Sports & Games</button>
+            <button id="cat-files" onclick="setCategory('files')" class="w-full text-left px-3 py-2 rounded-xl text-gray-400 hover:bg-gray-800/50 hover:text-white transition">Files & Folders</button>
+            <button id="cat-interface" onclick="setCategory('interface')" class="w-full text-left px-3 py-2 rounded-xl text-gray-400 hover:bg-gray-800/50 hover:text-white transition">Interface</button>
+            <button id="cat-logos" onclick="setCategory('logos')" class="w-full text-left px-3 py-2 rounded-xl text-gray-400 hover:bg-gray-800/50 hover:text-white transition">Logos & Brands</button>
+          </div>
         </div>
 
-        <button onclick="toggleCodeView()" class="absolute bottom-4 left-4 bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 flex items-center gap-1.5 transition">
-          <i class='bx bx-code-alt'></i>
-          <span id="code-btn-text">View Code</span>
-        </button>
+        <!-- Library Sources -->
+        <div class="bg-sidebar p-4 rounded-3xl space-y-3">
+          <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider px-2">Library Source</span>
+          <div class="space-y-2 text-xs">
+            <label class="flex items-center gap-2 cursor-pointer text-gray-300">
+              <input type="radio" name="lib" value="all" checked onchange="setLibrary('all')" class="accent-[#cbf33d]">
+              <span>All Libraries</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-gray-300">
+              <input type="radio" name="lib" value="boxicons" onchange="setLibrary('boxicons')" class="accent-[#cbf33d]">
+              <span>Boxicons CDN</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-gray-300">
+              <input type="radio" name="lib" value="heroicons" onchange="setLibrary('heroicons')" class="accent-[#cbf33d]">
+              <span>Heroicons CDN</span>
+            </label>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Right Side: Customization Controls -->
-      <div class="w-full md:w-1/2 flex flex-col justify-between space-y-4">
-        
-        <div class="space-y-3">
-          <div class="flex justify-between items-center text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
-            <span id="drawer-category">Sports & Games</span>
-            <button class="text-gray-400 hover:text-white flex items-center gap-1"><i class='bx bx-info-circle'></i> Usage</button>
-          </div>
-
-          <h2 id="drawer-title" class="text-2xl font-bold capitalize">golf ball</h2>
-
-          <!-- Category Tags -->
-          <div class="flex flex-wrap gap-1.5 text-[10px] text-gray-400">
-            <span class="bg-[#1c1c1c] px-2.5 py-1 rounded-full border border-gray-800">sport</span>
-            <span class="bg-[#1c1c1c] px-2.5 py-1 rounded-full border border-gray-800">game</span>
-            <span class="bg-[#1c1c1c] px-2.5 py-1 rounded-full border border-gray-800">course</span>
-            <span class="bg-[#1c1c1c] px-2.5 py-1 rounded-full border border-gray-800">activity</span>
-          </div>
-
-          <!-- Color Switches -->
-          <div class="flex items-center gap-3 text-xs pt-2">
-            <span class="text-gray-400 w-12">Colors</span>
-            <div class="flex gap-2 items-center">
-              <button onclick="setDrawerColor('#cbf33d')" class="w-5 h-5 rounded-full bg-[#cbf33d] ring-2 ring-white/20"></button>
-              <button onclick="setDrawerColor('#a855f7')" class="w-5 h-5 rounded-full bg-purple-500"></button>
-              <button onclick="setDrawerColor('#ffffff')" class="w-5 h-5 rounded-full bg-white"></button>
-              <input type="color" onchange="setDrawerColor(this.value)" class="w-5 h-5 rounded-full bg-transparent border-0 cursor-pointer">
-            </div>
-          </div>
-
-          <!-- Padding Toggle & Transforms -->
-          <div class="flex items-center justify-between text-xs text-gray-400 pt-1">
-            <div class="flex items-center gap-2">
-              <span>Padding</span>
-              <button class="w-7 h-7 bg-[#1c1c1c] border border-gray-800 rounded-lg flex items-center justify-center text-white"><i class='bx bx-checkbox'></i></button>
-            </div>
-            <div class="flex items-center gap-2">
-              <span>Flip</span>
-              <button class="w-7 h-7 bg-[#1c1c1c] border border-gray-800 rounded-lg flex items-center justify-center text-white"><i class='bx bx-reflect-vertical'></i></button>
-              <button class="w-7 h-7 bg-[#1c1c1c] border border-gray-800 rounded-lg flex items-center justify-center text-white"><i class='bx bx-reflect-horizontal'></i></button>
-            </div>
-            <div class="flex items-center gap-2">
-              <span>Rotate</span>
-              <button class="w-7 h-7 bg-[#1c1c1c] border border-gray-800 rounded-lg flex items-center justify-center text-white"><i class='bx bx-rotate-right'></i></button>
-            </div>
-          </div>
-
-          <!-- Size Control Slider -->
-          <div class="flex items-center gap-3 text-xs pt-1">
-            <button class="w-6 h-6 bg-[#1c1c1c] rounded flex items-center justify-center">-</button>
-            <span class="font-mono text-white text-xs">24 px</span>
-            <button class="w-6 h-6 bg-[#1c1c1c] rounded flex items-center justify-center">+</button>
-            <div class="flex-1 bg-[#1c1c1c] border border-gray-800 py-1 px-3 rounded-lg flex justify-between items-center text-gray-400">
-              <span>⚡ No Animation</span>
-              <i class='bx bx-chevron-down'></i>
-            </div>
-          </div>
+      <!-- Icon Display Grid -->
+      <div class="md:col-span-4">
+        <div id="icon-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <!-- Populated by JS via CDN references -->
         </div>
-
-        <!-- Action Buttons -->
-        <div class="flex gap-2 pt-2">
-          <button onclick="copyCodeSnippet()" class="flex-1 bg-white text-black py-2.5 rounded-xl font-bold text-xs hover:bg-gray-200 transition flex items-center justify-center gap-1">
-            <i class='bx bx-copy'></i> SVG CODE
-          </button>
-          <button class="flex-1 bg-[#cbf33d] text-black py-2.5 rounded-xl font-bold text-xs hover:bg-[#bce430] transition flex items-center justify-center gap-1">
-            <i class='bx bx-download'></i> SVG
-          </button>
-        </div>
-
       </div>
 
     </div>
+  </main>
+
+  <!-- Icon Inspector Modal Drawer -->
+  <div id="icon-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#0d0d0d] border border-gray-800 rounded-3xl max-w-2xl w-full p-8 relative space-y-6 text-left shadow-2xl">
+      <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white text-sm">✕</button>
+      
+      <div class="grid md:grid-cols-2 gap-6 items-center">
+        <!-- Live Preview Box -->
+        <div class="bg-[#050505] border border-gray-800 rounded-2xl h-64 flex flex-col items-center justify-center relative p-6">
+          <div id="modal-preview-icon" class="flex items-center justify-center text-6xl text-[#cbf33d]"></div>
+          <button onclick="copyIconCode()" class="absolute bottom-4 left-4 bg-white/10 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 hover:bg-white/20 transition">
+            &lt;/&gt; View Code
+          </button>
+        </div>
+
+        <!-- Customizer Panel -->
+        <div class="space-y-4">
+          <div>
+            <span id="modal-category" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">LOGOS</span>
+            <h3 id="modal-title" class="text-2xl font-bold capitalize mt-1">Tailwind</h3>
+          </div>
+
+          <!-- Color Chooser -->
+          <div class="space-y-1.5">
+            <span class="text-xs text-gray-400">Colors</span>
+            <div class="flex gap-2">
+              <button onclick="setModalColor('#cbf33d')" class="w-6 h-6 rounded-full bg-[#cbf33d] ring-2 ring-white/20"></button>
+              <button onclick="setModalColor('#a855f7')" class="w-6 h-6 rounded-full bg-purple-500"></button>
+              <button onclick="setModalColor('#ffffff')" class="w-6 h-6 rounded-full bg-white"></button>
+              <button onclick="setModalColor('#3b82f6')" class="w-6 h-6 rounded-full bg-blue-500"></button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-gray-400 pt-2">
+            <span>Size</span>
+            <span class="font-mono text-white">24 px</span>
+          </div>
+
+          <!-- Export Buttons -->
+          <div class="space-y-2 pt-2">
+            <button onclick="copyIconCode()" class="w-full bg-white text-black py-2.5 rounded-xl font-bold text-xs hover:bg-gray-200 transition">SVG CODE</button>
+            <button onclick="downloadIcon()" class="w-full bg-[#cbf33d] text-black py-2.5 rounded-xl font-bold text-xs hover:bg-[#bce430] transition">Download SVG</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
+  <!-- CDN Engine Scripts -->
   <script>
-    let activeLibrary = 'all';
-    let currentCategory = 'all';
-    let activeIcon = null;
-    let drawerColor = '#cbf33d';
+    // CDN Base Endpoints
+    const HEROICONS_CDN = "https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/";
 
-    const sampleIcons = [
-      { name: 'golf ball', category: 'sports', type: 'boxicons', code: 'bx-tennis-ball' },
-      { name: 'basketball', category: 'sports', type: 'boxicons', code: 'bx-basketball' },
-      { name: 'football', category: 'sports', type: 'boxicons', code: 'bx-football' },
-      { name: 'folder minus', category: 'files', type: 'boxicons', code: 'bx-folder-minus' },
-      { name: 'folder plus', category: 'files', type: 'boxicons', code: 'bx-folder-plus' },
-      { name: 'file', category: 'files', type: 'boxicons', code: 'bx-file' },
-      { name: 'search', category: 'interface', type: 'boxicons', code: 'bx-search' },
-      { name: 'cog', category: 'interface', type: 'boxicons', code: 'bx-cog' },
-      { name: 'bell', category: 'interface', type: 'boxicons', code: 'bx-bell' },
-      { name: 'github', category: 'logos', type: 'boxicons', code: 'bxl-github' },
-      { name: 'tailwind', category: 'logos', type: 'boxicons', code: 'bxl-tailwind-css' },
-      { name: 'academic cap', category: 'interface', type: 'heroicons', code: 'academic-cap' },
-      { name: 'camera', category: 'interface', type: 'heroicons', code: 'camera' },
-      { name: 'heart', category: 'interface', type: 'heroicons', code: 'heart' }
+    // Complete mapped sets rendered directly from Boxicons CSS CDN & Heroicons SVG CDN
+    const boxiconsList = [
+      "golf-ball", "basketball", "football", "folder-minus", "folder-plus", "file", "search", "cog",
+      "bell", "camera", "heart", "trash", "user", "envelope", "home", "star", "lock", "key",
+      "check", "x", "plus", "minus", "image", "music", "video", "phone", "map", "calendar"
     ];
 
-    function renderGrid() {
+    const boxiconsLogosList = [
+      "tailwind-css", "github", "discord", "figma", "twitter", "facebook", "instagram", "youtube"
+    ];
+
+    const heroiconsList = [
+      "academic-cap", "adjustments-horizontal", "archive-box", "arrow-down", "arrow-left", "arrow-right",
+      "arrow-up", "bars-3", "bookmark", "building-office", "calculator", "chart-bar", "clock", "credit-card",
+      "document", "eye", "film", "folder", "globe-alt", "inbox", "light-bulb", "link", "magnifying-glass"
+    ];
+
+    let allIcons = [];
+    let currentCategory = 'all';
+    let currentLibrary = 'all';
+    let activeModalIcon = null;
+    let selectedColor = '#cbf33d';
+
+    function buildCDNLibraries() {
+      allIcons = [];
+
+      // Boxicons standard
+      boxiconsList.forEach(name => {
+        allIcons.push({
+          name: name,
+          lib: 'boxicons',
+          cat: categorize(name),
+          code: `bx bx-${name}`
+        });
+      });
+
+      // Boxicons logos
+      boxiconsLogosList.forEach(name => {
+        allIcons.push({
+          name: name.replace('-css', ''),
+          lib: 'boxicons',
+          cat: 'logos',
+          code: `bxl bxl-${name}`
+        });
+      });
+
+      // Heroicons via jsDelivr CDN
+      heroiconsList.forEach(name => {
+        allIcons.push({
+          name: name,
+          lib: 'heroicons',
+          cat: categorize(name),
+          cdnUrl: `${HEROICONS_CDN}${name}.svg`
+        });
+      });
+
+      filterAndRender();
+    }
+
+    function categorize(name) {
+      if (['golf-ball', 'basketball', 'football'].includes(name)) return 'sports';
+      if (['folder-minus', 'folder-plus', 'file', 'archive-box', 'document', 'folder'].includes(name)) return 'files';
+      if (['tailwind', 'github', 'discord', 'figma', 'twitter', 'facebook', 'instagram', 'youtube'].some(l => name.includes(l))) return 'logos';
+      return 'interface';
+    }
+
+    function filterAndRender() {
+      const q = document.getElementById('icon-search').value.toLowerCase();
+      const filtered = allIcons.filter(icon => {
+        const matchesCat = currentCategory === 'all' || icon.cat === currentCategory;
+        const matchesLib = currentLibrary === 'all' || icon.lib === currentLibrary;
+        const matchesSearch = icon.name.toLowerCase().includes(q);
+        return matchesCat && matchesLib && matchesSearch;
+      });
+
       const grid = document.getElementById('icon-grid');
       grid.innerHTML = '';
 
-      const query = document.getElementById('icon-search').value.toLowerCase();
-
-      const filtered = sampleIcons.filter(icon => {
-        const matchLib = activeLibrary === 'all' || icon.type === activeLibrary;
-        const matchCat = currentCategory === 'all' || icon.category === currentCategory;
-        const matchSearch = icon.name.includes(query);
-        return matchLib && matchCat && matchSearch;
-      });
-
       filtered.forEach(icon => {
-        const card = document.createElement('div');
-        card.className = "bg-card hover:bg-[#141414] border border-gray-800 hover:border-[#cbf33d]/50 p-4 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition group";
-        card.onclick = () => openDrawer(icon);
+        const item = document.createElement('div');
+        item.className = "bg-card hover:bg-[#141414] border border-gray-800 hover:border-gray-700 p-4 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition text-center group min-h-[100px]";
+        item.onclick = () => openModal(icon);
 
         let iconMarkup = '';
-        if (icon.type === 'boxicons') {
-          iconMarkup = `<i class='bx ${icon.code} text-2xl text-gray-300 group-hover:text-[#cbf33d] transition'></i>`;
+        if (icon.lib === 'boxicons') {
+          iconMarkup = `<i class='${icon.code} text-2xl group-hover:scale-110 transition'></i>`;
         } else {
-          iconMarkup = `<img src="https://unpkg.com/heroicons@2.0.18/24/outline/${icon.code}.svg" class="w-6 h-6 filter invert group-hover:scale-110 transition"/>`;
+          iconMarkup = `<img src="${icon.cdnUrl}" class="w-6 h-6 filter invert group-hover:scale-110 transition" alt="${icon.name}"/>`;
         }
 
-        card.innerHTML = `
-          <div class="mb-2 flex items-center justify-center h-8">${iconMarkup}</div>
-          <span class="text-[10px] text-gray-400 group-hover:text-white truncate w-full text-center">${icon.name}</span>
+        item.innerHTML = `
+          <div class="mb-2 text-white flex items-center justify-center">${iconMarkup}</div>
+          <span class="text-[11px] text-gray-400 group-hover:text-white truncate w-full">${icon.name.replace(/-/g, ' ')}</span>
         `;
-        grid.appendChild(card);
+        grid.appendChild(item);
       });
     }
 
-    function openDrawer(icon) {
-      activeIcon = icon;
-      document.getElementById('drawer-title').innerText = icon.name;
-      document.getElementById('drawer-category').innerText = icon.category;
-      
-      updateDrawerPreview();
+    function handleSearch(val) { filterAndRender(); }
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      ['all', 'sports', 'files', 'interface', 'logos'].forEach(c => {
+        const btn = document.getElementById(`cat-${c}`);
+        if (c === cat) {
+          btn.className = "w-full text-left px-3 py-2 rounded-xl accent-lime font-bold flex justify-between items-center";
+        } else {
+          btn.className = "w-full text-left px-3 py-2 rounded-xl text-gray-400 hover:bg-gray-800/50 hover:text-white transition";
+        }
+      });
+      filterAndRender();
+    }
+
+    function setLibrary(lib) {
+      currentLibrary = lib;
+      filterAndRender();
+    }
+
+    function setStyle(style) {
+      ['regular', 'rounded', 'sharp'].forEach(s => {
+        const btn = document.getElementById(`style-${s}`);
+        if (s === style) {
+          btn.className = "px-5 py-1.5 rounded-full bg-white text-black font-bold transition";
+        } else {
+          btn.className = "px-5 py-1.5 rounded-full text-gray-400 hover:text-white transition";
+        }
+      });
+    }
+
+    function openModal(icon) {
+      activeModalIcon = icon;
+      document.getElementById('modal-title').innerText = icon.name.replace(/-/g, ' ');
+      document.getElementById('modal-category').innerText = icon.cat;
+
+      const container = document.getElementById('modal-preview-icon');
+      if (icon.lib === 'boxicons') {
+        container.innerHTML = `<i class='${icon.code}' style="color: ${selectedColor}"></i>`;
+      } else {
+        container.innerHTML = `<img src="${icon.cdnUrl}" style="width: 64px; height: 64px; filter: invert(1);"/>`;
+      }
+
       document.getElementById('icon-modal').classList.remove('hidden');
+    }
+
+    function setModalColor(hex) {
+      selectedColor = hex;
+      if (activeModalIcon) openModal(activeModalIcon);
     }
 
     function closeModal() {
       document.getElementById('icon-modal').classList.add('hidden');
     }
 
-    function setDrawerColor(color) {
-      drawerColor = color;
-      updateDrawerPreview();
+    function copyIconCode() {
+      if (!activeModalIcon) return;
+      const snippet = activeModalIcon.lib === 'boxicons' 
+        ? `<i class='${activeModalIcon.code}'></i>`
+        : `<img src="${activeModalIcon.cdnUrl}" alt="${activeModalIcon.name}" />`;
+      navigator.clipboard.writeText(snippet);
+      alert('Icon CDN snippet copied!');
     }
 
-    function updateDrawerPreview() {
-      const target = document.getElementById('drawer-preview-target');
-      if (activeIcon.type === 'boxicons') {
-        target.innerHTML = `<i class='bx ${activeIcon.code}' style='font-size: 80px; color: ${drawerColor};'></i>`;
-      } else {
-        target.innerHTML = `<img src="https://unpkg.com/heroicons@2.0.18/24/outline/${activeIcon.code}.svg" style="width: 80px; height: 80px; filter: invert(1);" />`;
-      }
-    }
+    function downloadIcon() { alert('Downloading SVG asset...'); }
 
-    function handleSearch() { renderGrid(); }
-    function setLibrary(lib) { activeLibrary = lib; renderGrid(); }
-    function filterCategory(cat) { currentCategory = cat; renderGrid(); }
-    function setStyle(st) {
-      ['regular', 'rounded', 'sharp'].forEach(s => {
-        const btn = document.getElementById(`style-${s}`);
-        btn.className = s === st ? "bg-white text-black px-3 py-1 rounded-full font-bold transition" : "hover:text-white transition";
-      });
-    }
-
-    window.onload = renderGrid;
+    window.onload = buildCDNLibraries;
   </script>
 </body>
 </html>
